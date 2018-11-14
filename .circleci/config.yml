@@ -15,15 +15,15 @@ jobs:
           command: |
             cd ./AndroidDemo
             ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
       - run:
           name: Run unit tests and lint
           command: |
             cd ./AndroidDemo
             ./gradlew lint test
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
       - store_artifacts:
           path: AndroidDemo/app/build/reports
           destination: reports
@@ -55,8 +55,8 @@ jobs:
           name: Test with Firebase Test Lab
           command: >
             sudo gcloud firebase test android run
-              --app <local_server_path>/<app_apk>.apk
-              --test <local_server_path>/<app_test_apk>.apk
+              --app AndroidDemo/app/build/outputs/apk/debug/app-debug.apk
+              --test AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
               --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
       - run:
           name: Install gsutil dependency and copy test results data
