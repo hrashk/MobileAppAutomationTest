@@ -1,9 +1,9 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/gogi
+    working_directory: ~/code
     docker:
-      - image: circleci/android:api-26-alpha
+      - image: circleci/android:api-28-alpha
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -20,7 +20,7 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
       - run:
-          name: Run Tests
+          name: Run Unit Tests with lint
           command: |
             cd ./AndroidDemo
             ./gradlew lint test
@@ -30,8 +30,9 @@ jobs:
       - store_test_results:
           path: AndroidDemo/app/build/test-results
   test:
+    working_directory: ~/code
     docker:
-      - image: circleci/android:api-26-alpha
+      - image: circleci/android:api-28-alpha
     steps:
       - checkout
       - restore_cache:
@@ -39,6 +40,7 @@ jobs:
       - run:
           name: Build both the application and the AndroidTest APKs
           command: |
+            cd ./AndroidDemo
             ./gradlew :app:assembleDebug
             ./gradlew :app:assembleDebugAndroidTest
       - run:
