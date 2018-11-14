@@ -15,15 +15,15 @@ jobs:
           command: |
             cd ./AndroidDemo
             ./gradlew androidDependencies
+      - run:
+          name: Run unit tests and lint
+          command: |
+            cd ./AndroidDemo
+            ./gradlew lint test
       - save_cache:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
-      - run:
-          name: Run Unit Tests with lint
-          command: |
-            cd ./AndroidDemo
-            ./gradlew lint test
       - store_artifacts:
           path: AndroidDemo/app/build/reports
           destination: reports
@@ -63,3 +63,12 @@ jobs:
           command: |
             sudo pip install -U crcmod
             sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
