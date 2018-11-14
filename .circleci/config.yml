@@ -57,12 +57,14 @@ jobs:
             sudo gcloud firebase test android run \
               --app AndroidDemo/app/build/outputs/apk/debug/app-debug.apk \
               --test AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+              --device model=Nexus6P,version=26,locale=es,orientation=portrait  \
+              --device model=walleye,version=28,locale=en,orientation=landscape \
               --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
       - run:
           name: Install gsutil dependency and copy test results data
           command: |
             sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+            sudo gsutil -m cp -r -U `sudo gsutil ls gs://cloud-test-${GOOGLE_PROJECT_ID} | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
 workflows:
   version: 2
