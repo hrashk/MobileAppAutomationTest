@@ -12,7 +12,9 @@ jobs:
           key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
       - run:
           name: Download Dependencies
-          command: ./AndroidDemo/gradlew androidDependencies
+          command: |
+            cd ./AndroidDemo
+            ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/AndroidDemo/.gradle
