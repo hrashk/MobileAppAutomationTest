@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/code
+    working_directory: ~/gogi
     docker:
       - image: circleci/android:api-26-alpha
     environment:
@@ -17,11 +17,13 @@ jobs:
             ./gradlew androidDependencies
       - save_cache:
           paths:
-            - ~/AndroidDemo/.gradle
+            - ~/.gradle
           key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./AndroidDemo/gradlew lint test
+          command: |
+            cd ./AndroidDemo
+            ./gradlew lint test
       - store_artifacts:
           path: AndroidDemo/app/build/reports
           destination: reports
