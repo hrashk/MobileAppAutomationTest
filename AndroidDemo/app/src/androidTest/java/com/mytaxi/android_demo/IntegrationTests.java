@@ -1,5 +1,6 @@
 package com.mytaxi.android_demo;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -7,18 +8,19 @@ import org.junit.runner.RunWith;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.utils.network.HttpClient;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -36,29 +38,46 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class IntegrationTests {
 
-    // todo: fetch username & password from the URL using the network.HttpClient class
+    // todo: move this to a test data helper class
     // the class will have to be extended to extract the password too
     private static final String USERNAME = "crazydog335";
     private static final String PASSWORD = "venture";
 
+    private IdlingResource mIdlingResource;
+
     /**
-     * Use {@link ActivityScenario} to create and launch the activity under test. This is a
-     * replacement for {@link androidx.test.rule.ActivityTestRule}.
+     * The activity is not launched right away so that we have a chance to set things up
      */
+    @Rule
+    public ActivityTestRule<MainActivity> mActivityRule =
+            new ActivityTestRule<>(MainActivity.class, false, false);
+
     @Before
     public void launchActivity() {
-//        System.err.println("Launching activity: " + MainActivity.class.getCanonicalName());
         // reset the login info so that we can run several login tests
-        // todo: the shared prefs storage should probably be injected with Dagger
+        // todo: to have a more fine grained control, inject a mock prefs storage into the activity
+        // todo: that would allow controlling whether a user is logged in each test function
+        // todo: but that would also make the test less black-box
         Context targetContext = getInstrumentation().getTargetContext();
         SharedPrefStorage sps = new SharedPrefStorage(targetContext);
         sps.resetUser();
-//        SharedPreferences.Editor preferencesEditor =
-//                PreferenceManager.getDefaultSharedPreferences(targetContext).edit();
-//        preferencesEditor.remove();
-        ActivityScenario.launch(MainActivity.class);
+
+        // register the idling resource. TODO: move this into a util method/helper
+        mIdlingResource = HttpClient.getIdlingResource();
+        IdlingRegistry.getInstance().register(mIdlingResource);
+
+        // launch the main activity
+        mActivityRule.launchActivity(null);
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        if (mIdlingResource != null) {
+            IdlingRegistry.getInstance().unregister(mIdlingResource);
+        }
     }
 
     @Test

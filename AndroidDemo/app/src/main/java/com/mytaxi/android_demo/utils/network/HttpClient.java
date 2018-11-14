@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import androidx.test.espresso.idling.CountingIdlingResource;
+import androidx.test.espresso.IdlingResource;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -34,6 +36,23 @@ public class HttpClient {
     private final OkHttpClient mClient;
     private final JsonParser mJsonParser;
 
+    /**
+     * TODO: inject a singleton with Dagger 2.
+     */
+    private static final CountingIdlingResource httpIdlingResource
+            = new CountingIdlingResource("OkHttpClient idling resource");
+
+    /**
+     * It would be better to inject mClient with Dagger 2 rather than building it explicitly
+     * in the constructor. This would also allow injecting a custom client with an idling resource
+     * in the integration tests.
+     * @see <a href="https://github.com/JakeWharton/okhttp-idling-resource/blob/master/src/main/java/com/jakewharton/espresso/OkHttp3IdlingResource.java">OkHttp3IdlingResource</a>
+     * @return the {@link IdlingResource} for HTTP requests.
+     */
+    public static IdlingResource getIdlingResource() {
+        return httpIdlingResource;
+    }
+
     public HttpClient() {
         mClient = new OkHttpClient.Builder().readTimeout(SOCKET_TIMEOUT, TimeUnit.SECONDS).build();
         mJsonParser = new JsonParser();
@@ -43,11 +62,14 @@ public class HttpClient {
         int amount = 256;
         String seed = "23f8827e04239990";
         String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
+        httpIdlingResource.increment();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                // TODO: extract into parent IdlingCallback class
+                httpIdlingResource.decrement();
             }
 
             @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -59,6 +81,8 @@ public class HttpClient {
                     Log.i(LOG_TAG, "Fetched successfully " + drivers.size() + " drivers.");
                     driverCallback.setDrivers(drivers);
                     driverCallback.run();
+                } finally {
+                    httpIdlingResource.decrement();
                 }
             }
         });
@@ -66,11 +90,13 @@ public class HttpClient {
 
     public void fetchUser(String seed, final UserCallback userCallback) {
         String url = RANDOM_USER_URL + "?seed=" + seed;
+        httpIdlingResource.increment();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                httpIdlingResource.decrement();
             }
 
             @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -80,6 +106,8 @@ public class HttpClient {
                     if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
                     userCallback.setUser(getUser(responseBody.string()));
                     userCallback.run();
+                } finally {
+                    httpIdlingResource.decrement();
                 }
             }
         });
