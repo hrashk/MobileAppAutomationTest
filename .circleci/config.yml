@@ -62,13 +62,14 @@ jobs:
               --app AndroidDemo/app/build/outputs/apk/debug/app-debug.apk \
               --test AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
               --device model=Nexus6P,version=26,locale=es,orientation=portrait  \
-              --device model=walleye,version=28,locale=en,orientation=landscape
+              --device model=walleye,version=28,locale=en,orientation=landscape |& \
+              tee fire.log
       - run:
           name: Install gsutil dependency and copy test results data
           command: |
-            mkdir results
             sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://test-lab-ufvvnpfxih5qm-nsr5nw62it4xq | tail -1` results | true
+            mkdir results
+            sudo gsutil -m cp -r -U gs://`egrep -o 'test-lab-[^]]+' fire.log` results | true
           when: always
       - store_artifacts:
           path: results
