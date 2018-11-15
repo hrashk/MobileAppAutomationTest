@@ -29,13 +29,14 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
+//import static org.hamcrest.Matchers.hasProperty;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -118,8 +119,17 @@ public class IntegrationTests {
         // when I search for sa
         onView(withId(R.id.textSearch)).perform(typeText("sa"), closeSoftKeyboard());
         // and click on Sarah Scott
-        onData(hasProperty("name", equalTo("Sarah Scott"))).perform(click());
+//        onData(hasProperty("name", equalTo("Sarah Scott")))
+        onView(withText("Sarah Scott"))
+                .inRoot(isPlatformPopup())
+                .perform(click());
         // then the driver profile is displayed
         onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed()));
+
+        // when I click on dial
+        onView(withId(R.id.fab)).perform(click());
+
+        // then the system dialer is called
+        // todo: implement the intent filter here
     }
 }
