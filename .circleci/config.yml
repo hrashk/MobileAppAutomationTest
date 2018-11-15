@@ -67,8 +67,9 @@ jobs:
       - run:
           name: Install gsutil dependency and copy test results data
           command: |
+            mkdir results
             sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://cloud-test-awesome-project-a6509 | tail -1` results/ | true
+            sudo gsutil -m cp -r -U `sudo gsutil ls gs://cloud-test-awesome-project-a6509 | tail -1` results | true
           when: always
       - store_artifacts:
           path: results
