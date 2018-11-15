@@ -9,16 +9,25 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
+          keys:  # use increasingly general patterns to restore gradle cache
+            - gradle-repo-v1-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
+            - gradle-repo-v1-{{ checksum "AndroidDemo/build.gradle" }}-
+            - gradle-repo-v1-
       - run:
-          name: Download Dependencies
+          name: Build both the application and the AndroidTest APKs
+          working_directory: AndroidDemo
           command: |
-            cd ./AndroidDemo
-            ./gradlew androidDependencies
+            ./gradlew :app:assembleDebug
+            ./gradlew :app:assembleDebugAndroidTest
       - save_cache:
+          key: gradle-repo-v1-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
+      - save_cache:
+          key: apk-cache-v1-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - AndroidDemo/app/build/outputs/apk/debug/app-debug.apk
+            - AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
       - run:
           name: Run unit tests and lint
           command: |
@@ -34,15 +43,8 @@ jobs:
     docker:
       - image: circleci/android:api-28-alpha
     steps:
-      - checkout
       - restore_cache:
-          key: jars-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
-      - run:
-          name: Build both the application and the AndroidTest APKs
-          command: |
-            cd ./AndroidDemo
-            ./gradlew :app:assembleDebug
-            ./gradlew :app:assembleDebugAndroidTest
+          key: apk-cache-v1-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Store Google Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
@@ -58,14 +60,19 @@ jobs:
               --app AndroidDemo/app/build/outputs/apk/debug/app-debug.apk \
               --test AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
               --device model=Nexus6P,version=26,locale=es,orientation=portrait  \
-              --device model=walleye,version=28,locale=en,orientation=portrait \
+              --device model=walleye,version=28,locale=en,orientation=landscape \
               --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
       - run:
           name: Install gsutil dependency and copy test results data
           command: |
             sudo pip install -U crcmod
             sudo gsutil -m cp -r -U `sudo gsutil ls gs://cloud-test-${GOOGLE_PROJECT_ID} | tail -1` ${CIRCLE_ARTIFACTS}/ | true
-
+          when: always
+      - store_artifacts:
+          path: ${CIRCLE_ARTIFACTS}
+          destination: reports
+      - store_test_results:
+          path: ${CIRCLE_ARTIFACTS}
 workflows:
   version: 2
   build_and_test:
