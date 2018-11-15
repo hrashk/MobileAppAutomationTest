@@ -22,6 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -32,6 +33,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -82,7 +86,8 @@ public class IntegrationTests {
     }
 
     @Test
-    public void checkLogin() {
+    public void checkLoginAndLogout() {
+        // using replaceText instead of typeText to avoid the issue in landscape mode
         // When user credentials are entered
         onView(withId(R.id.edt_username))
                 .perform(replaceText(USERNAME));
@@ -100,14 +105,21 @@ public class IntegrationTests {
     public void performSearch() {
         // When user credentials are entered
         onView(withId(R.id.edt_username))
-                .perform(typeText(USERNAME));
+                .perform(replaceText(USERNAME));
         onView(withId(R.id.edt_password))
-                .perform(typeText(PASSWORD), closeSoftKeyboard());
-        // And the user clics on log in
+                .perform(replaceText(PASSWORD));
+        // And the user clicks on log in
         onView(withId(R.id.btn_login))
                 .perform(click());
 
         // Then the search text box appears
         onView(withId(R.id.textSearch)).check(matches(isDisplayed()));
+
+        // when I search for sa
+        onView(withId(R.id.textSearch)).perform(typeText("sa"), closeSoftKeyboard());
+        // and click on Sarah Scott
+        onData(hasProperty("name", equalTo("Sarah Scott"))).perform(click());
+        // then the driver profile is displayed
+        onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed()));
     }
 }
