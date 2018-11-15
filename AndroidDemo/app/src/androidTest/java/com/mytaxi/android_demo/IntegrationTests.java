@@ -25,6 +25,7 @@ import androidx.test.rule.ActivityTestRule;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -82,11 +83,11 @@ public class IntegrationTests {
 
     @Test
     public void checkLogin() {
-        // When user credwntials are entered
+        // When user credentials are entered
         onView(withId(R.id.edt_username))
-                .perform(typeText(USERNAME));
+                .perform(replaceText(USERNAME));
         onView(withId(R.id.edt_password))
-                .perform(typeText(PASSWORD), closeSoftKeyboard());
+                .perform(replaceText(PASSWORD));
         // And the user clics on log in
         onView(withId(R.id.btn_login))
                 .perform(click());
@@ -97,17 +98,16 @@ public class IntegrationTests {
 
     @Test
     public void performSearch() {
-        // login activity should launch by default
-        // Type text and then press the button.
+        // When user credentials are entered
         onView(withId(R.id.edt_username))
                 .perform(typeText(USERNAME));
         onView(withId(R.id.edt_password))
                 .perform(typeText(PASSWORD), closeSoftKeyboard());
-
+        // And the user clics on log in
         onView(withId(R.id.btn_login))
                 .perform(click());
 
-        // Check that the search text is displayed, i.e. login was successful
+        // Then the search text box appears
         onView(withId(R.id.textSearch)).check(matches(isDisplayed()));
     }
 }
