@@ -1,11 +1,15 @@
-version: 2
-jobs:
-  build:
-    working_directory: ~/code
+version: 2.1
+executors:
+  android-executor:
     docker:
       - image: circleci/android:api-28-alpha
+    working_directory: ~/code
     environment:
       JVM_OPTS: -Xmx3200m
+
+jobs:
+  build:
+    executor: android-executor
     steps:
       - checkout
       - restore_cache:
@@ -14,37 +18,35 @@ jobs:
             - gradle-repo-v1-{{ checksum "AndroidDemo/build.gradle" }}-
             - gradle-repo-v1-
       - run:
-          name: Build both the application and the AndroidTest APKs
+          name: Build both the application and the AndroidTest APKs, run lint
           working_directory: AndroidDemo
           command: |
             ./gradlew :app:assembleDebug
+            ./gradlew lint
             ./gradlew :app:assembleDebugAndroidTest
       - save_cache:
           key: gradle-repo-v1-{{ checksum "AndroidDemo/build.gradle" }}-{{ checksum  "AndroidDemo/app/build.gradle" }}
           paths:
             - ~/.gradle
-      - save_cache:
-          key: apk-cache-v1-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - persist_to_workspace:
+          root: AndroidDemo/app/build/outputs/apk
           paths:
-            - AndroidDemo/app/build/outputs/apk/debug/app-debug.apk
-            - AndroidDemo/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            - debug/app-debug.apk
+            - androidTest/debug/app-debug-androidTest.apk
       - run:
-          name: Run unit tests and lint
-          command: |
-            cd ./AndroidDemo
-            ./gradlew lint test
+          name: Run unit tests
+          working_directory: AndroidDemo
+          command: ./gradlew test
       - store_artifacts:
           path: AndroidDemo/app/build/reports
           destination: reports
       - store_test_results:
           path: AndroidDemo/app/build/test-results
   test:
-    working_directory: ~/code
-    docker:
-      - image: circleci/android:api-28-alpha
+    executor: android-executor
     steps:
-      - restore_cache:
-          key: apk-cache-v1-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - attach_workspace:
+          at: AndroidDemo/app/build/outputs/apk
       - run:
           name: Store Google Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
