@@ -1,47 +1,46 @@
 package com.mytaxi.android_demo;
 
+import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.screens.AuthenticationScreen;
+import com.mytaxi.android_demo.screens.DriverProfileScreen;
+import com.mytaxi.android_demo.screens.MainScreen;
+import com.mytaxi.android_demo.screens.ScreenFactory;
+import com.mytaxi.android_demo.utils.Helpers;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.mytaxi.android_demo.activities.MainActivity;
-import com.mytaxi.android_demo.utils.Helpers;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static com.mytaxi.android_demo.utils.WithDriverNameMatcher.withDriverName;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasProperty;
+import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
+import static com.mytaxi.android_demo.data.AuthenticationData.USERNAME;
+import static com.mytaxi.android_demo.data.AuthenticationData.resetLoggedInUser;
+import static com.mytaxi.android_demo.data.DriverData.DEFAULT_DRIVER_NAME;
+import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
+import static com.mytaxi.android_demo.utils.Helpers.registerIdlingResources;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * There are two integration tests here
  *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * @see #checkLoginAndLogout()
+ * @see #checkSearchingDefaultDriver()
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class IntegrationTests {
 
-    // todo: move this to a test data helper class
-    // the class will have to be extended to extract the password too
-    private static final String USERNAME = "crazydog335";
-    private static final String PASSWORD = "venture";
+    protected AuthenticationScreen mAuthenticationScreen;
+    protected MainScreen mMainScreen;
+    protected DriverProfileScreen mDriverProfileScreen;
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
@@ -52,9 +51,9 @@ public class IntegrationTests {
 
     @Before
     public void launchActivity() {
-        Helpers.resetLoggedInUser();
+        resetLoggedInUser();
 
-        Helpers.registerIdlingResources();
+        registerIdlingResources();
 
         // launch the main activity
         mActivityRule.launchActivity(null);
@@ -65,24 +64,26 @@ public class IntegrationTests {
         Helpers.unregisterIdlingResources();
     }
 
-    @Test
-    public void checkLoginAndLogout() {
-        // using replaceText instead of typeText to avoid the issue in landscape mode
-        // When user credentials are entered
-        onView(withId(R.id.edt_username))
-                .perform(replaceText(USERNAME));
-        onView(withId(R.id.edt_password))
-                .perform(replaceText(PASSWORD));
-        // And the user clics on log in
-        onView(withId(R.id.btn_login))
-                .perform(click());
-
-        // Then the search text box appears
-        onView(withId(R.id.textSearch)).check(matches(isDisplayed()));
+    @Before
+    public void getScreens() {
+        mAuthenticationScreen = ScreenFactory.getAuthenticationScreen();
+        mMainScreen = ScreenFactory.getmMainScreen();
+        mDriverProfileScreen = ScreenFactory.getDriverProfileScreen();
     }
 
     @Test
-    public void performSearch() {
+    public void checkLoginAndLogout() {
+        // When the user authenticates herself
+        mAuthenticationScreen.authenticateUser(USERNAME, PASSWORD);
+
+        mMainScreen.checkIsDisplayed(); // Then the main screen appears
+
+        // when the user logs out
+        // then the authentication screen appears
+    }
+
+    @Test
+    public void checkSearchingDefaultDriver() {
         // When user credentials are entered
         onView(withId(R.id.edt_username))
                 .perform(replaceText(USERNAME));
@@ -92,24 +93,15 @@ public class IntegrationTests {
         onView(withId(R.id.btn_login))
                 .perform(click());
 
-        // Then the search text box appears
-        onView(withId(R.id.textSearch)).check(matches(isDisplayed()));
 
-        // when I search for sa
-        onView(withId(R.id.textSearch)).perform(typeText("sa"), closeSoftKeyboard());
+        mMainScreen.checkIsDisplayed()  // Then the main screen appears
+                .searchForDrivers(SEARCH_STRING) // When I search for sa
+                .selectDriverByName(DEFAULT_DRIVER_NAME); // And select the default driver
 
-        // and click on Sarah Scott
-        onData(withDriverName("Sarah Scott"))
-                .inRoot(isPlatformPopup())
-                .perform(click());
+        // Then the driver profile screen is displayed
+        mDriverProfileScreen.checkIsDisplayed()
+                .clickOnDialButton(); // When the starts dialing the driver
 
-        // then the driver profile is displayed
-        onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed()));
-
-        // when I click on dial
-        onView(withId(R.id.fab)).perform(click());
-
-        // then the system dialer is called
-        // todo: implement the intent filter here
+        // then the system dialer is launched
     }
 }
