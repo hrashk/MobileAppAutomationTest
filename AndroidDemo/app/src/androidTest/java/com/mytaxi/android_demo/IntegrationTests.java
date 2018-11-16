@@ -89,12 +89,12 @@ public class IntegrationTests {
 
         mMainScreen.checkIsDisplayed()  // Then the main screen appears
                 .searchForDrivers(SEARCH_STRING) // When the user searches for sa
+                // TODO: check that only drivers with that prefix are shown and no one else
                 .selectDriverByName(DEFAULT_DRIVER_NAME); // And selects the 2nd (default) driver
-
-        mDriverProfileScreen.checkIsDisplayed() // Then the driver profile screen is displayed
+        // Then the driver profile screen is displayed
+        mDriverProfileScreen.checkIsDisplayedForDriver(DEFAULT_DRIVER_NAME)
                 .clickOnDialButton() // When the clicks on the dial button
-                // Then the system phone dialer is
-                // launched with driver's phone number
+                // Then the driver's phone number is passed to the dialer app
                 .checkDialedNumber(DEFAULT_PHONE_NUMBER);
     }
 }
