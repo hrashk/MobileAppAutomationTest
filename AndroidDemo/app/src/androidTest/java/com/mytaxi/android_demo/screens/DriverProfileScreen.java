@@ -1,12 +1,19 @@
 package com.mytaxi.android_demo.screens;
 
+import android.content.Intent;
+import android.net.Uri;
+
 import com.mytaxi.android_demo.R;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.core.AllOf.allOf;
 
 public class DriverProfileScreen {
 
@@ -29,6 +36,13 @@ public class DriverProfileScreen {
     public DriverProfileScreen clickOnDialButton() {
         onView(withId(DIAL_BUTTON_ID))
                 .perform(click());
+        return this;
+    }
+
+    public DriverProfileScreen checkDialedNumber(String phoneNumber) {
+        intended(allOf(
+                hasAction(Intent.ACTION_DIAL),
+                hasData(Uri.parse("tel:" + phoneNumber))));
         return this;
     }
 }

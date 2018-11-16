@@ -13,18 +13,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
 import static com.mytaxi.android_demo.data.AuthenticationData.USERNAME;
 import static com.mytaxi.android_demo.data.AuthenticationData.resetLoggedInUser;
 import static com.mytaxi.android_demo.data.DriverData.DEFAULT_DRIVER_NAME;
+import static com.mytaxi.android_demo.data.DriverData.DEFAULT_PHONE_NUMBER;
 import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
 import static com.mytaxi.android_demo.utils.Helpers.registerIdlingResources;
 
@@ -45,9 +42,12 @@ public class IntegrationTests {
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
+//    @Rule
+//    public ActivityTestRule<MainActivity> mActivityRule =
+//            new ActivityTestRule<>(MainActivity.class, false, false);
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule =
-            new ActivityTestRule<>(MainActivity.class, false, false);
+    public IntentsTestRule<MainActivity> mActivityRule =
+            new IntentsTestRule<>(MainActivity.class, false, false);
 
     @Before
     public void launchActivity() {
@@ -84,24 +84,17 @@ public class IntegrationTests {
 
     @Test
     public void checkSearchingDefaultDriver() {
-        // When user credentials are entered
-        onView(withId(R.id.edt_username))
-                .perform(replaceText(USERNAME));
-        onView(withId(R.id.edt_password))
-                .perform(replaceText(PASSWORD));
-        // And the user clicks on log in
-        onView(withId(R.id.btn_login))
-                .perform(click());
-
+        // When the user authenticates herself
+        mAuthenticationScreen.authenticateUser(USERNAME, PASSWORD);
 
         mMainScreen.checkIsDisplayed()  // Then the main screen appears
-                .searchForDrivers(SEARCH_STRING) // When I search for sa
-                .selectDriverByName(DEFAULT_DRIVER_NAME); // And select the default driver
+                .searchForDrivers(SEARCH_STRING) // When the user searches for sa
+                .selectDriverByName(DEFAULT_DRIVER_NAME); // And selects the 2nd (default) driver
 
-        // Then the driver profile screen is displayed
-        mDriverProfileScreen.checkIsDisplayed()
-                .clickOnDialButton(); // When the starts dialing the driver
-
-        // then the system dialer is launched
+        mDriverProfileScreen.checkIsDisplayed() // Then the driver profile screen is displayed
+                .clickOnDialButton() // When the clicks on the dial button
+                // Then the system phone dialer is
+                // launched with driver's phone number
+                .checkDialedNumber(DEFAULT_PHONE_NUMBER);
     }
 }
