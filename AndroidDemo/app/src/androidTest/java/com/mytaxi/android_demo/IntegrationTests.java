@@ -6,18 +6,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import android.app.Activity;
-import android.content.Context;
-
 import com.mytaxi.android_demo.activities.MainActivity;
-import com.mytaxi.android_demo.utils.network.HttpClient;
-import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
+import com.mytaxi.android_demo.utils.Helpers;
 
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
@@ -33,10 +24,10 @@ import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
-import static org.hamcrest.Matchers.equalTo;
-//import static org.hamcrest.Matchers.hasProperty;
+import static com.mytaxi.android_demo.utils.WithDriverNameMatcher.withDriverName;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasProperty;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -52,8 +43,6 @@ public class IntegrationTests {
     private static final String USERNAME = "crazydog335";
     private static final String PASSWORD = "venture";
 
-    private IdlingResource mIdlingResource;
-
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
@@ -63,27 +52,17 @@ public class IntegrationTests {
 
     @Before
     public void launchActivity() {
-        // reset the login info so that we can run several login tests
-        // todo: to have a more fine grained control, inject a mock prefs storage into the activity
-        // todo: that would allow controlling whether a user is logged in each test function
-        // todo: but that would also make the test less black-box
-        Context targetContext = getInstrumentation().getTargetContext();
-        SharedPrefStorage sps = new SharedPrefStorage(targetContext);
-        sps.resetUser();
+        Helpers.resetLoggedInUser();
 
-        // register the idling resource. TODO: move this into a util method/helper
-        mIdlingResource = HttpClient.getIdlingResource();
-        IdlingRegistry.getInstance().register(mIdlingResource);
+        Helpers.registerIdlingResources();
 
         // launch the main activity
         mActivityRule.launchActivity(null);
     }
 
     @After
-    public void unregisterIdlingResource() {
-        if (mIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mIdlingResource);
-        }
+    public void unregisterIdlingResources() {
+        Helpers.unregisterIdlingResources();
     }
 
     @Test
@@ -118,11 +97,12 @@ public class IntegrationTests {
 
         // when I search for sa
         onView(withId(R.id.textSearch)).perform(typeText("sa"), closeSoftKeyboard());
+
         // and click on Sarah Scott
-//        onData(hasProperty("name", equalTo("Sarah Scott")))
-        onView(withText("Sarah Scott"))
+        onData(withDriverName("Sarah Scott"))
                 .inRoot(isPlatformPopup())
                 .perform(click());
+
         // then the driver profile is displayed
         onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed()));
 
