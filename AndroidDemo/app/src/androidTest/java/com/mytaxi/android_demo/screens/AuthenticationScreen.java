@@ -5,6 +5,8 @@ import com.mytaxi.android_demo.R;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
@@ -47,6 +49,12 @@ public class AuthenticationScreen {
     public AuthenticationScreen clickOnLoginButton() {
         onView(withId(LOGIN_BUTTON_ID))
                 .perform(click());
+        return this;
+    }
+
+    public AuthenticationScreen checkIsDisplayed() {
+        onView(withId(USERNAME_FIELD_ID))
+                .check(matches(isDisplayed()));
         return this;
     }
 }

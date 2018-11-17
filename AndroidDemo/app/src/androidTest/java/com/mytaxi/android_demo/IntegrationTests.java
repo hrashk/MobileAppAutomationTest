@@ -4,6 +4,7 @@ import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
+import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
 import com.mytaxi.android_demo.screens.ScreenFactory;
 import com.mytaxi.android_demo.utils.Helpers;
 
@@ -38,6 +39,7 @@ public class IntegrationTests {
     protected AuthenticationScreen mAuthenticationScreen;
     protected MainScreen mMainScreen;
     protected DriverProfileScreen mDriverProfileScreen;
+    protected NavigationDrawerScreen mNavigationDrawerScreen;
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
@@ -69,17 +71,17 @@ public class IntegrationTests {
         mAuthenticationScreen = ScreenFactory.getAuthenticationScreen();
         mMainScreen = ScreenFactory.getmMainScreen();
         mDriverProfileScreen = ScreenFactory.getDriverProfileScreen();
+        mNavigationDrawerScreen = ScreenFactory.getNavigationDrawerScreen();
     }
 
     @Test
     public void checkLoginAndLogout() {
         // When the user authenticates herself
         mAuthenticationScreen.authenticateUser(USERNAME, PASSWORD);
-
         mMainScreen.checkIsDisplayed(); // Then the main screen appears
 
-        // when the user logs out
-        // then the authentication screen appears
+        mNavigationDrawerScreen.logoutUser(USERNAME); // When the user logs out
+        mAuthenticationScreen.checkIsDisplayed();   // Then the authentication screen appears
     }
 
     @Test
@@ -93,7 +95,7 @@ public class IntegrationTests {
                 .selectDriverByName(DEFAULT_DRIVER_NAME); // And selects the 2nd (default) driver
         // Then the driver profile screen is displayed
         mDriverProfileScreen.checkIsDisplayedForDriver(DEFAULT_DRIVER_NAME)
-                .clickOnDialButton() // When the clicks on the dial button
+                .clickOnDialButton() // When the user clicks on the dial button
                 // Then the driver's phone number is passed to the dialer app
                 .checkDialedNumber(DEFAULT_PHONE_NUMBER);
     }
