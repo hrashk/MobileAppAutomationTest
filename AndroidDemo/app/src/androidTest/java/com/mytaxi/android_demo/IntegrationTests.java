@@ -44,9 +44,6 @@ public class IntegrationTests {
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
-//    @Rule
-//    public ActivityTestRule<MainActivity> mActivityRule =
-//            new ActivityTestRule<>(MainActivity.class, false, false);
     @Rule
     public IntentsTestRule<MainActivity> mActivityRule =
             new IntentsTestRule<>(MainActivity.class, false, false);
@@ -91,8 +88,9 @@ public class IntegrationTests {
 
         mMainScreen.checkIsDisplayed()  // Then the main screen appears
                 .searchForDrivers(SEARCH_STRING) // When the user searches for sa
-                // TODO: check that only drivers with that prefix are shown and no one else
-                .selectDriverByName(DEFAULT_DRIVER_NAME); // And selects the 2nd (default) driver
+                // Then only drivers with that prefix are shown
+                .checkSearchResultsStartWith(SEARCH_STRING)
+                .selectDriverByName(DEFAULT_DRIVER_NAME); // When selecting the 2nd driver
         // Then the driver profile screen is displayed
         mDriverProfileScreen.checkIsDisplayedForDriver(DEFAULT_DRIVER_NAME)
                 .clickOnDialButton() // When the user clicks on the dial button

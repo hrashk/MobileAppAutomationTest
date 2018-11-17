@@ -11,7 +11,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static com.mytaxi.android_demo.utils.WithDriverNameMatcher.withDriverName;
+import static com.mytaxi.android_demo.utils.WithEveryItemMatcher.withEveryItem;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 
 public class MainScreen {
 
@@ -40,6 +43,12 @@ public class MainScreen {
         onData(withDriverName(name))
                 .inRoot(isPlatformPopup())
                 .perform(click());
+        return this;
+    }
+
+    public MainScreen checkSearchResultsStartWith(String prefix) {
+        onView(withParent(withId(R.id.textSearch)))
+                .check(matches(withEveryItem(withDriverName(startsWith(prefix)))));
         return this;
     }
 }
