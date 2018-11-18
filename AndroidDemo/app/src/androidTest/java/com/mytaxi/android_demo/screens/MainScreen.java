@@ -1,5 +1,7 @@
 package com.mytaxi.android_demo.screens;
 
+import android.widget.AdapterView;
+
 import com.mytaxi.android_demo.R;
 
 import static androidx.test.espresso.Espresso.onData;
@@ -9,18 +11,16 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.mytaxi.android_demo.utils.StringStartsWithIgnoringCaseMatcher.startsWithIgnoringCase;
 import static com.mytaxi.android_demo.utils.WithDriverNameMatcher.withDriverName;
 import static com.mytaxi.android_demo.utils.WithEveryItemMatcher.withEveryItem;
-import static org.hamcrest.Matchers.is;
 
 public class MainScreen {
 
     protected static final int SEARCH_FIELD_ID = R.id.textSearch;
-    private static final String POPUP_CLASSNAME = "android.widget.DropDownListView";
 
     protected MainScreen() {
     }
@@ -48,16 +48,8 @@ public class MainScreen {
         return this;
     }
 
-    /**
-     * The way this is implemented is probably a hack as it relies on the hardcoded class name
-     * of the drop-down view.
-     * TODO: find a better way of doing this.
-     *
-     * @param prefix
-     * @return
-     */
     public MainScreen checkSearchResultsStartWith(String prefix) {
-        onView(withClassName(is(POPUP_CLASSNAME)))
+        onView(isAssignableFrom(AdapterView.class))
                 .inRoot(isPlatformPopup())
                 .check(matches(withEveryItem(withDriverName(startsWithIgnoringCase(prefix)))));
         return this;
