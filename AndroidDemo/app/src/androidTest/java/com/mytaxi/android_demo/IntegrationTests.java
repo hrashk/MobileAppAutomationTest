@@ -8,7 +8,6 @@ import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
-import com.mytaxi.android_demo.screens.ScreenFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,10 +41,14 @@ import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
 @LargeTest
 public class IntegrationTests {
 
-    protected AuthenticationScreen mAuthenticationScreen;
-    protected MainScreen mMainScreen;
-    protected DriverProfileScreen mDriverProfileScreen;
-    protected NavigationDrawerScreen mNavigationDrawerScreen;
+    @Inject
+    AuthenticationScreen mAuthenticationScreen;
+    @Inject
+    MainScreen mMainScreen;
+    @Inject
+    DriverProfileScreen mDriverProfileScreen;
+    @Inject
+    NavigationDrawerScreen mNavigationDrawerScreen;
 
     @Inject
     IdlingResource mResource;
@@ -80,14 +83,6 @@ public class IntegrationTests {
     public void unregisterIdlingResources() {
         if (mResource != null)
             IdlingRegistry.getInstance().unregister(mResource);
-    }
-
-    @Before
-    public void getScreens() {
-        mAuthenticationScreen = ScreenFactory.getAuthenticationScreen();
-        mMainScreen = ScreenFactory.getmMainScreen();
-        mDriverProfileScreen = ScreenFactory.getDriverProfileScreen();
-        mNavigationDrawerScreen = ScreenFactory.getNavigationDrawerScreen();
     }
 
     @Test

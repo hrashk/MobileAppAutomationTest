@@ -21,9 +21,6 @@ public class DriverProfileScreen {
     protected static final int DRIVER_NAME_FIELD_ID = R.id.textViewDriverName;
     protected static final int DIAL_BUTTON_ID = R.id.fab;
 
-    protected DriverProfileScreen() {
-    }
-
     /**
      * Checks if the {@link com.mytaxi.android_demo.activities.DriverProfileActivity} is displayed.
      * It looks for the driver name field on the screen.

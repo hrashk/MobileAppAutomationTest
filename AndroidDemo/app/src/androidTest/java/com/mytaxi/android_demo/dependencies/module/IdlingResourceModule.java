@@ -12,6 +12,13 @@ import okhttp3.OkHttpClient;
 @Module
 public class IdlingResourceModule {
 
+    /**
+     * Building an idling resource for the HTTP client using Jake Wharton's library
+     * https://github.com/JakeWharton/okhttp-idling-resource
+     *
+     * @param client - the OkHttp client that this resource wraps
+     * @return - the idling resource for the supplied client
+     */
     @Singleton
     @Provides
     IdlingResource providesHttpIdlingResource(OkHttpClient client) {

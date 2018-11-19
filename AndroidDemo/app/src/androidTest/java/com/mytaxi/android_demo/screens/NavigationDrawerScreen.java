@@ -17,9 +17,6 @@ public class NavigationDrawerScreen {
     protected static final int NAVIGATION_VIEW_ID = R.id.nav_view;
     protected static final int LOGOUT_BUTTON_ID = R.id.nav_logout;
 
-    protected NavigationDrawerScreen() {
-    }
-
     public NavigationDrawerScreen openNavigationDrawer() {
         onView(withId(DRAWER_LAYOUT_ID))
                 .perform(DrawerActions.open());

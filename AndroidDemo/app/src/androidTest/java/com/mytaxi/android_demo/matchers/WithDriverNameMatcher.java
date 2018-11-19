@@ -1,4 +1,4 @@
-package com.mytaxi.android_demo.utils;
+package com.mytaxi.android_demo.matchers;
 
 import com.mytaxi.android_demo.models.Driver;
 

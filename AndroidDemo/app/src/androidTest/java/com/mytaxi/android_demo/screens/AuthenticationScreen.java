@@ -19,9 +19,6 @@ public class AuthenticationScreen {
     protected static final int PASSWORD_FIELD_ID = R.id.edt_password;
     protected static final int LOGIN_BUTTON_ID = R.id.btn_login;
 
-    protected AuthenticationScreen() {
-    }
-
     /**
      * Enter username & password, then click on the Login button.
      *

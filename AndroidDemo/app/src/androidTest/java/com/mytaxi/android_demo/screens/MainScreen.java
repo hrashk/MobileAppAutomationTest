@@ -14,16 +14,13 @@ import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.mytaxi.android_demo.utils.StringStartsWithIgnoringCaseMatcher.startsWithIgnoringCase;
-import static com.mytaxi.android_demo.utils.WithDriverNameMatcher.withDriverName;
-import static com.mytaxi.android_demo.utils.WithEveryItemMatcher.withEveryItem;
+import static com.mytaxi.android_demo.matchers.StringStartsWithIgnoringCaseMatcher.startsWithIgnoringCase;
+import static com.mytaxi.android_demo.matchers.WithDriverNameMatcher.withDriverName;
+import static com.mytaxi.android_demo.matchers.WithEveryItemMatcher.withEveryItem;
 
 public class MainScreen {
 
     protected static final int SEARCH_FIELD_ID = R.id.textSearch;
-
-    protected MainScreen() {
-    }
 
     /**
      * Checks if the {@link com.mytaxi.android_demo.activities.MainActivity} is displayed.
