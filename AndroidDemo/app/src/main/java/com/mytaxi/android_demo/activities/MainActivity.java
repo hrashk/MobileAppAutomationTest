@@ -3,13 +3,6 @@ package com.mytaxi.android_demo.activities;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +21,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.mytaxi.android_demo.App;
 import com.mytaxi.android_demo.R;
 import com.mytaxi.android_demo.adapters.DriverAdapter;
@@ -35,9 +30,15 @@ import com.mytaxi.android_demo.dependencies.component.AppComponent;
 import com.mytaxi.android_demo.models.Driver;
 import com.mytaxi.android_demo.utils.PermissionHelper;
 import com.mytaxi.android_demo.utils.network.HttpClient;
-import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
+import com.mytaxi.android_demo.utils.storage.Storage;
 
 import javax.inject.Inject;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import static com.mytaxi.android_demo.misc.Constants.DEFAULT_LOCATION;
 import static com.mytaxi.android_demo.misc.Constants.DEFAULT_ZOOM;
@@ -54,9 +55,6 @@ public class MainActivity extends AuthenticatedActivity
 
     @Inject
     PermissionHelper mPermissionHelper;
-
-    @Inject
-    SharedPrefStorage mSharedPrefStorage;
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -185,16 +183,16 @@ public class MainActivity extends AuthenticatedActivity
                 mLastKnownLocation = null;
                 mPermissionHelper.getLocationPermission(this);
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
 
     private void getDeviceLocation() {
-    /*
-     * Get the best and most recent location of the device, which may be null in rare
-     * cases when a location is not available.
-     */
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
         try {
             if (mPermissionHelper.isLocationPermissionGranted()) {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -213,7 +211,7 @@ public class MainActivity extends AuthenticatedActivity
                     }
                 });
             }
-        } catch(SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }

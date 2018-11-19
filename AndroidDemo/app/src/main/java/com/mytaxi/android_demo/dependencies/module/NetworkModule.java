@@ -1,13 +1,11 @@
 package com.mytaxi.android_demo.dependencies.module;
 
 import com.google.gson.JsonParser;
-import com.mytaxi.android_demo.utils.network.HttpClient;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
-import androidx.test.espresso.idling.CountingIdlingResource;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;

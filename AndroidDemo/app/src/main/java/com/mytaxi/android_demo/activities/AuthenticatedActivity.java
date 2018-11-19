@@ -7,13 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mytaxi.android_demo.App;
 import com.mytaxi.android_demo.dependencies.component.AppComponent;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
+import com.mytaxi.android_demo.utils.storage.Storage;
 
 import javax.inject.Inject;
 
 public class AuthenticatedActivity extends AppCompatActivity {
 
     @Inject
-    SharedPrefStorage mSharedPrefStorage;
+    Storage mSharedPrefStorage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

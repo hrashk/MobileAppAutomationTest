@@ -4,16 +4,19 @@ import android.app.Instrumentation;
 
 import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.dependencies.component.TestComponent;
+import com.mytaxi.android_demo.models.User;
 import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
+import com.mytaxi.android_demo.utils.storage.Storage;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import javax.inject.Inject;
 
@@ -24,9 +27,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import static com.mytaxi.android_demo.data.AuthenticationData.LOGGEDIN_USER;
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
 import static com.mytaxi.android_demo.data.AuthenticationData.USERNAME;
-import static com.mytaxi.android_demo.data.AuthenticationData.resetLoggedInUser;
 import static com.mytaxi.android_demo.data.DriverData.DEFAULT_DRIVER_NAME;
 import static com.mytaxi.android_demo.data.DriverData.DEFAULT_PHONE_NUMBER;
 import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
@@ -52,6 +55,8 @@ public class IntegrationTests {
 
     @Inject
     IdlingResource mResource;
+    @Inject
+    Storage mStorage;
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
@@ -68,10 +73,13 @@ public class IntegrationTests {
     }
 
     @Before
-    public void launchActivity() {
+    public void setThingsUp() {
         injectDependencies();
 
-        resetLoggedInUser();
+        // Simulate the situation when there is no user logged in when the app is launched first
+        // and then return a valid user on subsequent calls
+        // Note that a more fine-grained control can be done in each test method individually
+        Mockito.when(mStorage.loadUser()).thenReturn(null, LOGGEDIN_USER);
 
         IdlingRegistry.getInstance().register(mResource);
 

@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.RequiresApi;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +22,7 @@ import com.mytaxi.android_demo.R;
 import com.mytaxi.android_demo.dependencies.component.AppComponent;
 import com.mytaxi.android_demo.utils.network.HttpClient;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
+import com.mytaxi.android_demo.utils.storage.Storage;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +39,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     HttpClient mHttpClient;
 
     @Inject
-    SharedPrefStorage mSharedPrefStorage;
+    Storage mSharedPrefStorage;
 
     private EditText mEditTextUsername;
     private EditText mEditTextPassword;
