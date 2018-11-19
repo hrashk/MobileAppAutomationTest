@@ -9,7 +9,6 @@ import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
 import com.mytaxi.android_demo.screens.ScreenFactory;
-import com.mytaxi.android_demo.utils.Helpers;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,11 +18,12 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import okhttp3.OkHttpClient;
 
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
 import static com.mytaxi.android_demo.data.AuthenticationData.USERNAME;
@@ -31,7 +31,6 @@ import static com.mytaxi.android_demo.data.AuthenticationData.resetLoggedInUser;
 import static com.mytaxi.android_demo.data.DriverData.DEFAULT_DRIVER_NAME;
 import static com.mytaxi.android_demo.data.DriverData.DEFAULT_PHONE_NUMBER;
 import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
-import static com.mytaxi.android_demo.utils.Helpers.registerIdlingResources;
 
 /**
  * There are two integration tests here
@@ -49,7 +48,7 @@ public class IntegrationTests {
     protected NavigationDrawerScreen mNavigationDrawerScreen;
 
     @Inject
-    OkHttpClient mClient;
+    IdlingResource mResource;
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
@@ -71,7 +70,7 @@ public class IntegrationTests {
 
         resetLoggedInUser();
 
-        registerIdlingResources(mClient);
+        IdlingRegistry.getInstance().register(mResource);
 
         // launch the main activity
         mActivityRule.launchActivity(null);
@@ -79,7 +78,8 @@ public class IntegrationTests {
 
     @After
     public void unregisterIdlingResources() {
-        Helpers.unregisterIdlingResources();
+        if (mResource != null)
+            IdlingRegistry.getInstance().unregister(mResource);
     }
 
     @Before
