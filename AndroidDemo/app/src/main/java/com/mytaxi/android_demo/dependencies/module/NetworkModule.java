@@ -18,7 +18,11 @@ public class NetworkModule {
     @Singleton
     @Provides
     OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient.Builder().readTimeout(SOCKET_TIMEOUT, TimeUnit.SECONDS).build();
+        return getBuilder().build();
+    }
+
+    protected OkHttpClient.Builder getBuilder() {
+        return new OkHttpClient.Builder().readTimeout(SOCKET_TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Singleton

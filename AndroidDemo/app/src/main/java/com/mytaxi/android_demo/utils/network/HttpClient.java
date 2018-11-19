@@ -30,7 +30,7 @@ import static com.mytaxi.android_demo.misc.Constants.LOG_TAG;
 
 public class HttpClient {
 
-    private static final String RANDOM_USER_URL = "https://randomuser.me/api/";
+    public static final String RANDOM_USER_URL = "https://randomuser.me/api/";
 
     @Inject
     JsonParser mJsonParser;

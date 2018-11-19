@@ -72,19 +72,24 @@ public class IntegrationTests {
         component.inject(this);
     }
 
+    /**
+     * Set up fixtures then launch the {@link MainActivity}
+     * Inject dependencies. Register the idling resources related to OkHttpClient.
+     * Configure the storage mock to emulate the situation when there is no user logged in when
+     * the app is launched for the first time, but then return a valid user after successful
+     * authentication.
+     * In general, this approach enables testing of various negative scenarios such as preferences
+     * store becoming corrupt and not finding the user after a call to {@link Storage#saveUser(User)}
+     */
     @Before
     public void setThingsUp() {
         injectDependencies();
 
-        // Simulate the situation when there is no user logged in when the app is launched first
-        // and then return a valid user on subsequent calls
-        // Note that a more fine-grained control can be done in each test method individually
         Mockito.when(mStorage.loadUser()).thenReturn(null, LOGGEDIN_USER);
 
         IdlingRegistry.getInstance().register(mResource);
 
-        // launch the main activity
-        mActivityRule.launchActivity(null);
+        mActivityRule.launchActivity(null);  // launch the main activity
     }
 
     @After
