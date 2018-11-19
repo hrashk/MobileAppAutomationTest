@@ -1,21 +1,21 @@
 package com.mytaxi.android_demo.utils;
 
-import android.content.Context;
-
-import com.mytaxi.android_demo.utils.network.HttpClient;
-import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
+import com.jakewharton.espresso.OkHttp3IdlingResource;
 
 import androidx.test.espresso.IdlingRegistry;
-
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import androidx.test.espresso.IdlingResource;
+import okhttp3.OkHttpClient;
 
 public class Helpers {
+    static IdlingResource mResource;
 
-    public static void registerIdlingResources() {
-        IdlingRegistry.getInstance().register(HttpClient.getIdlingResource());
+    public static void registerIdlingResources(OkHttpClient mClient) {
+        mResource = OkHttp3IdlingResource.create("OkHttp", mClient);
+        IdlingRegistry.getInstance().register(mResource);
     }
 
     public static void unregisterIdlingResources() {
-        IdlingRegistry.getInstance().unregister(HttpClient.getIdlingResource());
+        if (mResource != null)
+            IdlingRegistry.getInstance().unregister(mResource);
     }
 }

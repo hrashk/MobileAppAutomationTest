@@ -1,6 +1,9 @@
 package com.mytaxi.android_demo;
 
+import android.app.Instrumentation;
+
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.dependencies.component.TestComponent;
 import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
@@ -14,9 +17,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
+
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+import okhttp3.OkHttpClient;
 
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
 import static com.mytaxi.android_demo.data.AuthenticationData.USERNAME;
@@ -41,6 +48,9 @@ public class IntegrationTests {
     protected DriverProfileScreen mDriverProfileScreen;
     protected NavigationDrawerScreen mNavigationDrawerScreen;
 
+    @Inject
+    OkHttpClient mClient;
+
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
@@ -48,11 +58,20 @@ public class IntegrationTests {
     public IntentsTestRule<MainActivity> mActivityRule =
             new IntentsTestRule<>(MainActivity.class, false, false);
 
+    protected void injectDependencies() {
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        TestApp app = (TestApp) instrumentation.getTargetContext().getApplicationContext();
+        TestComponent component = (TestComponent) app.getAppComponent();
+        component.inject(this);
+    }
+
     @Before
     public void launchActivity() {
+        injectDependencies();
+
         resetLoggedInUser();
 
-        registerIdlingResources();
+        registerIdlingResources(mClient);
 
         // launch the main activity
         mActivityRule.launchActivity(null);

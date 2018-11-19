@@ -16,10 +16,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
-import androidx.test.espresso.idling.CountingIdlingResource;
-import androidx.test.espresso.IdlingResource;
+import javax.inject.Inject;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -28,61 +27,42 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import static com.mytaxi.android_demo.misc.Constants.LOG_TAG;
-import static com.mytaxi.android_demo.misc.Constants.SOCKET_TIMEOUT;
 
 public class HttpClient {
 
     private static final String RANDOM_USER_URL = "https://randomuser.me/api/";
-    private final OkHttpClient mClient;
-    private final JsonParser mJsonParser;
 
-    /**
-     * TODO: inject a singleton with Dagger 2.
-     */
-    private static final CountingIdlingResource httpIdlingResource
-            = new CountingIdlingResource("OkHttpClient idling resource");
+    @Inject
+    JsonParser mJsonParser;
 
-    /**
-     * It would be better to inject mClient with Dagger 2 rather than building it explicitly
-     * in the constructor. This would also allow injecting a custom client with an idling resource
-     * in the integration tests.
-     * @see <a href="https://github.com/JakeWharton/okhttp-idling-resource/blob/master/src/main/java/com/jakewharton/espresso/OkHttp3IdlingResource.java">OkHttp3IdlingResource</a>
-     * @return the {@link IdlingResource} for HTTP requests.
-     */
-    public static IdlingResource getIdlingResource() {
-        return httpIdlingResource;
-    }
+    @Inject
+    OkHttpClient mClient;
 
+    @Inject
     public HttpClient() {
-        mClient = new OkHttpClient.Builder().readTimeout(SOCKET_TIMEOUT, TimeUnit.SECONDS).build();
-        mJsonParser = new JsonParser();
     }
 
     public void fetchDrivers(final DriverCallback driverCallback) {
         int amount = 256;
         String seed = "23f8827e04239990";
         String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
-        httpIdlingResource.increment();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                // TODO: extract into parent IdlingCallback class
-                httpIdlingResource.decrement();
             }
 
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
                     ArrayList<Driver> drivers = getDrivers(responseBody.string());
                     Log.i(LOG_TAG, "Fetched successfully " + drivers.size() + " drivers.");
                     driverCallback.setDrivers(drivers);
                     driverCallback.run();
-                } finally {
-                    httpIdlingResource.decrement();
                 }
             }
         });
@@ -90,24 +70,21 @@ public class HttpClient {
 
     public void fetchUser(String seed, final UserCallback userCallback) {
         String url = RANDOM_USER_URL + "?seed=" + seed;
-        httpIdlingResource.increment();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                httpIdlingResource.decrement();
             }
 
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
                     userCallback.setUser(getUser(responseBody.string()));
                     userCallback.run();
-                } finally {
-                    httpIdlingResource.decrement();
                 }
             }
         });
@@ -117,7 +94,7 @@ public class HttpClient {
         JsonObject jsonObject = mJsonParser.parse(jsonResponse).getAsJsonObject();
         JsonArray results = jsonObject.getAsJsonArray("results");
         ArrayList<Driver> drivers = new ArrayList<>();
-        for (JsonElement jsonElement :results) {
+        for (JsonElement jsonElement : results) {
             JsonObject jsonUser = jsonElement.getAsJsonObject();
             JsonObject name = jsonUser.getAsJsonObject("name");
             String firstName = name.get("first").getAsString();

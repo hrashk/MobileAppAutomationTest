@@ -18,7 +18,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mAppComponent = DaggerAppComponent.builder()
+        mAppComponent = createComponent();
+    }
+
+    protected AppComponent createComponent() {
+        return DaggerAppComponent.builder()
                 .sharedPrefStorageModule(new SharedPrefStorageModule(getApplicationContext()))
                 .build();
     }
