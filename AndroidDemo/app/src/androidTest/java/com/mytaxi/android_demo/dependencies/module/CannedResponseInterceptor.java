@@ -1,14 +1,9 @@
 package com.mytaxi.android_demo.dependencies.module;
 
-import android.app.Instrumentation;
 import android.content.Context;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.stream.Collectors;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import okhttp3.HttpUrl;
@@ -17,6 +12,7 @@ import okhttp3.MediaType;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Okio;
 
 import static com.mytaxi.android_demo.utils.network.HttpClient.RANDOM_USER_URL;
 
@@ -33,11 +29,11 @@ class CannedResponseInterceptor implements Interceptor {
         DRIVERS_DATA = readTestAsset("drivers.json");
     }
 
-    String readTestAsset(String path){
+    String readTestAsset(String path) {
         Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
         try {
             InputStream is = ctx.getResources().getAssets().open(path);
-            return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+            return Okio.buffer(Okio.source(is)).readUtf8();
         } catch (IOException e) {
             e.printStackTrace();
             return "";
