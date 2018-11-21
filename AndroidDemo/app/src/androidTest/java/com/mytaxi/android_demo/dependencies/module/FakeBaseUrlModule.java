@@ -5,19 +5,18 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
-import okhttp3.mockwebserver.MockWebServer;
 
 @Module
-public class CannedResponseModule extends NetworkModule {
+public class FakeBaseUrlModule {
     private HttpUrl mUrl;
 
-    public CannedResponseModule(HttpUrl url){
+    public FakeBaseUrlModule(HttpUrl url){
         mUrl = url;
     }
 
     @Singleton
     @Provides
-    HttpUrl provideMockedBaseUrl() {
+    HttpUrl provideFakeBaseUrl() {
         return mUrl;
     }
 }

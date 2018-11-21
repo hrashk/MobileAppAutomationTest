@@ -1,6 +1,4 @@
-package com.mytaxi.android_demo.dependencies.module;
-
-import com.mytaxi.android_demo.utils.AssetReader;
+package com.mytaxi.android_demo.utils;
 
 import java.io.IOException;
 
@@ -11,7 +9,7 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static com.mytaxi.android_demo.utils.network.HttpClient.RANDOM_USER_URL;
+import static com.mytaxi.android_demo.misc.Constants.RANDOM_USER_URL;
 
 /**
  * A simple interceptor is used to return canned JSON results. For more sophisticated testing, use

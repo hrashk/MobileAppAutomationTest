@@ -5,7 +5,7 @@ import android.content.Context;
 import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.dependencies.component.DaggerTestComponent;
 import com.mytaxi.android_demo.dependencies.component.TestComponent;
-import com.mytaxi.android_demo.dependencies.module.CannedResponseModule;
+import com.mytaxi.android_demo.dependencies.module.FakeBaseUrlModule;
 import com.mytaxi.android_demo.models.User;
 import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
@@ -76,7 +76,7 @@ public class IntegrationTests {
 
     protected void injectDependencies() {
         TestComponent component = DaggerTestComponent.builder()
-                .cannedResponseModule(new CannedResponseModule(mServer.url("/app")))
+                .fakeBaseUrlModule(new FakeBaseUrlModule(mServer.url("/app")))
                 .build();
 
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -96,7 +96,7 @@ public class IntegrationTests {
      * store becoming corrupt and not finding the user after a call to {@link Storage#saveUser(User)}
      */
     @Before
-    public void setThingsUp() throws IOException {
+    public void setThingsUp() {
         injectDependencies();
 
         mServer.setDispatcher(new CannedDispatcher());

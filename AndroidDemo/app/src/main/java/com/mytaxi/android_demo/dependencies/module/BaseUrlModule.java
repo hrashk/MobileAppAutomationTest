@@ -6,7 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
 
-import static com.mytaxi.android_demo.utils.network.HttpClient.RANDOM_USER_URL;
+import static com.mytaxi.android_demo.misc.Constants.RANDOM_USER_URL;
 
 @Module
 public class BaseUrlModule {

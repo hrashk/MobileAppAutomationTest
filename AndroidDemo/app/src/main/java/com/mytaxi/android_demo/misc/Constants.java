@@ -13,6 +13,8 @@ public final class Constants {
     // Network
     public static final int SOCKET_TIMEOUT = 30;
 
+    public static final String RANDOM_USER_URL = "https://randomuser.me/api/";
+
     // Location
     public static final float DEFAULT_ZOOM = 18.0f;
     public static final LatLng DEFAULT_LOCATION = new LatLng(53.544604, 9.928757); // mytaxi Hamburg office

@@ -33,8 +33,6 @@ import static com.mytaxi.android_demo.misc.Constants.LOG_TAG;
 @Singleton
 public class HttpClient {
 
-    public static final String RANDOM_USER_URL = "https://randomuser.me/api/";
-
     @Inject
     JsonParser mJsonParser;
 
@@ -51,7 +49,6 @@ public class HttpClient {
     public void fetchDrivers(final DriverCallback driverCallback) {
         String amount = "256";
         String seed = "23f8827e04239990";
-//        String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
         HttpUrl url = mBaseUrl.newBuilder()
                 .addQueryParameter("results", amount)
                 .addQueryParameter("seed", seed)
@@ -79,7 +76,6 @@ public class HttpClient {
     }
 
     public void fetchUser(String seed, final UserCallback userCallback) {
-//        String url = RANDOM_USER_URL + "?seed=" + seed;
         HttpUrl url = mBaseUrl.newBuilder()
                 .addQueryParameter("seed", seed)
                 .build();
