@@ -1,14 +1,17 @@
 package com.mytaxi.android_demo;
 
-import android.app.Instrumentation;
+import android.content.Context;
 
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.dependencies.component.DaggerTestComponent;
 import com.mytaxi.android_demo.dependencies.component.TestComponent;
+import com.mytaxi.android_demo.dependencies.module.CannedResponseModule;
 import com.mytaxi.android_demo.models.User;
 import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
+import com.mytaxi.android_demo.utils.CannedDispatcher;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
 import org.junit.After;
@@ -18,6 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import androidx.test.espresso.IdlingRegistry;
@@ -26,6 +31,7 @@ import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import okhttp3.mockwebserver.MockWebServer;
 
 import static com.mytaxi.android_demo.data.AuthenticationData.LOGGEDIN_USER;
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
@@ -58,17 +64,25 @@ public class IntegrationTests {
     @Inject
     Storage mStorage;
 
+    @Rule
+    public final MockWebServer mServer = new MockWebServer();
+
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
     @Rule
-    public IntentsTestRule<MainActivity> mActivityRule =
+    public final IntentsTestRule<MainActivity> mActivityRule =
             new IntentsTestRule<>(MainActivity.class, false, false);
 
     protected void injectDependencies() {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        TestApp app = (TestApp) instrumentation.getTargetContext().getApplicationContext();
-        TestComponent component = (TestComponent) app.getAppComponent();
+        TestComponent component = DaggerTestComponent.builder()
+                .cannedResponseModule(new CannedResponseModule(mServer.url("/app")))
+                .build();
+
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        App app = App.getApplicationContext(context);
+        app.setComponent(component);
+
         component.inject(this);
     }
 
@@ -82,18 +96,21 @@ public class IntegrationTests {
      * store becoming corrupt and not finding the user after a call to {@link Storage#saveUser(User)}
      */
     @Before
-    public void setThingsUp() {
+    public void setThingsUp() throws IOException {
         injectDependencies();
+
+        mServer.setDispatcher(new CannedDispatcher());
 
         Mockito.when(mStorage.loadUser()).thenReturn(null, LOGGEDIN_USER);
 
         IdlingRegistry.getInstance().register(mResource);
 
+
         mActivityRule.launchActivity(null);  // launch the main activity
     }
 
     @After
-    public void unregisterIdlingResources() {
+    public void unregisterIdlingResources() throws IOException {
         if (mResource != null)
             IdlingRegistry.getInstance().unregister(mResource);
     }

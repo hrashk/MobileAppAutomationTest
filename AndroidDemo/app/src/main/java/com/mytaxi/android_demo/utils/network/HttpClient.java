@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -28,6 +30,7 @@ import okhttp3.ResponseBody;
 
 import static com.mytaxi.android_demo.misc.Constants.LOG_TAG;
 
+@Singleton
 public class HttpClient {
 
     public static final String RANDOM_USER_URL = "https://randomuser.me/api/";
@@ -39,13 +42,20 @@ public class HttpClient {
     OkHttpClient mClient;
 
     @Inject
+    HttpUrl mBaseUrl;
+
+    @Inject
     public HttpClient() {
     }
 
     public void fetchDrivers(final DriverCallback driverCallback) {
-        int amount = 256;
+        String amount = "256";
         String seed = "23f8827e04239990";
-        String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
+//        String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
+        HttpUrl url = mBaseUrl.newBuilder()
+                .addQueryParameter("results", amount)
+                .addQueryParameter("seed", seed)
+                .build();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -69,7 +79,10 @@ public class HttpClient {
     }
 
     public void fetchUser(String seed, final UserCallback userCallback) {
-        String url = RANDOM_USER_URL + "?seed=" + seed;
+//        String url = RANDOM_USER_URL + "?seed=" + seed;
+        HttpUrl url = mBaseUrl.newBuilder()
+                .addQueryParameter("seed", seed)
+                .build();
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override

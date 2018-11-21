@@ -31,4 +31,7 @@ public class App extends Application {
         return mAppComponent;
     }
 
+    public void setComponent(AppComponent component) {
+        mAppComponent = component;
+    }
 }

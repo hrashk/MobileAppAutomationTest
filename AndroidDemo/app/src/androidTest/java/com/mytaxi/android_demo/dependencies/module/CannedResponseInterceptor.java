@@ -1,18 +1,15 @@
 package com.mytaxi.android_demo.dependencies.module;
 
-import android.content.Context;
+import com.mytaxi.android_demo.utils.AssetReader;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import androidx.test.platform.app.InstrumentationRegistry;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okio.Okio;
 
 import static com.mytaxi.android_demo.utils.network.HttpClient.RANDOM_USER_URL;
 
@@ -20,24 +17,14 @@ import static com.mytaxi.android_demo.utils.network.HttpClient.RANDOM_USER_URL;
  * A simple interceptor is used to return canned JSON results. For more sophisticated testing, use
  * https://github.com/square/okhttp/tree/master/mockwebserver
  */
+@Deprecated
 class CannedResponseInterceptor implements Interceptor {
     final String USER_DATA;
     final String DRIVERS_DATA;
 
     public CannedResponseInterceptor() {
-        USER_DATA = readTestAsset("user.json");
-        DRIVERS_DATA = readTestAsset("drivers.json");
-    }
-
-    String readTestAsset(String path) {
-        Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
-        try {
-            InputStream is = ctx.getResources().getAssets().open(path);
-            return Okio.buffer(Okio.source(is)).readUtf8();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+        USER_DATA = AssetReader.readTestAsset("user.json");
+        DRIVERS_DATA = AssetReader.readTestAsset("drivers.json");
     }
 
     @Override
