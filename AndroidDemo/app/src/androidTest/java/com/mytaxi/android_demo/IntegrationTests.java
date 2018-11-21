@@ -12,12 +12,14 @@ import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
 import com.mytaxi.android_demo.utils.CannedDispatcher;
+import com.mytaxi.android_demo.utils.OkHttpIdlingResourceRule;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
@@ -59,22 +61,36 @@ public class IntegrationTests {
     @Inject
     NavigationDrawerScreen mNavigationDrawerScreen;
 
-    @Inject
-    IdlingResource mResource;
+//    @Inject
+//    IdlingResource mResource;
     @Inject
     Storage mStorage;
+    @Inject
+    OkHttpIdlingResourceRule mIdlingResource;
 
-    @Rule
+    //    @Rule
     public final MockWebServer mServer = new MockWebServer();
+
+    {
+        TestComponent component = injectApp();
+
+        component.inject(this);
+    }
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
-    @Rule
+//    @Rule
     public final IntentsTestRule<MainActivity> mActivityRule =
             new IntentsTestRule<>(MainActivity.class, false, false);
 
-    protected void injectDependencies() {
+    @Rule
+    public final RuleChain chain = RuleChain
+            .outerRule(mServer)
+            .around(mIdlingResource)
+            .around(mActivityRule);
+
+    private TestComponent injectApp() {
         TestComponent component = DaggerTestComponent.builder()
                 .fakeBaseUrlModule(new FakeBaseUrlModule(mServer.url("/app")))
                 .build();
@@ -82,8 +98,7 @@ public class IntegrationTests {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         App app = App.getApplicationContext(context);
         app.setComponent(component);
-
-        component.inject(this);
+        return component;
     }
 
     /**
@@ -97,23 +112,22 @@ public class IntegrationTests {
      */
     @Before
     public void setThingsUp() throws IOException {
-        injectDependencies();
+//        injectDependencies();
 
         mServer.setDispatcher(new CannedDispatcher());
 
         Mockito.when(mStorage.loadUser()).thenReturn(null, LOGGEDIN_USER);
 
-        IdlingRegistry.getInstance().register(mResource);
-
+//        IdlingRegistry.getInstance().register(mResource);
 
         mActivityRule.launchActivity(null);  // launch the main activity
     }
 
-    @After
-    public void unregisterIdlingResources() throws IOException {
-        if (mResource != null)
-            IdlingRegistry.getInstance().unregister(mResource);
-    }
+//    @After
+//    public void unregisterIdlingResources() throws IOException {
+//        if (mResource != null)
+//            IdlingRegistry.getInstance().unregister(mResource);
+//    }
 
     @Test
     public void checkLoginAndLogout() {
