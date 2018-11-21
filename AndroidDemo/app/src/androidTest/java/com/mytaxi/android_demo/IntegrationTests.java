@@ -1,36 +1,19 @@
 package com.mytaxi.android_demo;
 
-import android.content.Context;
-
 import com.mytaxi.android_demo.activities.MainActivity;
-import com.mytaxi.android_demo.dependencies.component.DaggerTestComponent;
-import com.mytaxi.android_demo.dependencies.component.TestComponent;
-import com.mytaxi.android_demo.dependencies.module.FakeBaseUrlModule;
 import com.mytaxi.android_demo.models.User;
-import com.mytaxi.android_demo.screens.AuthenticationScreen;
-import com.mytaxi.android_demo.screens.DriverProfileScreen;
-import com.mytaxi.android_demo.screens.MainScreen;
-import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
 import com.mytaxi.android_demo.utils.CannedDispatcher;
-import com.mytaxi.android_demo.utils.OkHttpIdlingResourceRule;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import okhttp3.mockwebserver.MockWebServer;
 
 import static com.mytaxi.android_demo.data.AuthenticationData.LOGGEDIN_USER;
 import static com.mytaxi.android_demo.data.AuthenticationData.PASSWORD;
@@ -47,50 +30,7 @@ import static com.mytaxi.android_demo.data.DriverData.SEARCH_STRING;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class IntegrationTests {
-
-    @Inject
-    AuthenticationScreen mAuthenticationScreen;
-    @Inject
-    MainScreen mMainScreen;
-    @Inject
-    DriverProfileScreen mDriverProfileScreen;
-    @Inject
-    NavigationDrawerScreen mNavigationDrawerScreen;
-
-    @Inject
-    Storage mStorage;
-    @Inject
-    OkHttpIdlingResourceRule mIdlingResource;
-
-    final MockWebServer mServer = new MockWebServer();
-
-    {
-        injectApp().inject(this);
-    }
-
-    /**
-     * The activity is not launched right away so that we have a chance to set things up
-     */
-    final IntentsTestRule<MainActivity> mActivityRule =
-            new IntentsTestRule<>(MainActivity.class, false, false);
-
-    @Rule
-    public final RuleChain chain = RuleChain
-            .outerRule(mServer)
-            .around(mIdlingResource)
-            .around(mActivityRule);
-
-    private TestComponent injectApp() {
-        TestComponent component = DaggerTestComponent.builder()
-                .fakeBaseUrlModule(new FakeBaseUrlModule(mServer.url("/app")))
-                .build();
-
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        App app = App.getApplicationContext(context);
-        app.setComponent(component);
-        return component;
-    }
+public class IntegrationTests extends BaseTests {
 
     /**
      * Set up fixtures then launch the {@link MainActivity}

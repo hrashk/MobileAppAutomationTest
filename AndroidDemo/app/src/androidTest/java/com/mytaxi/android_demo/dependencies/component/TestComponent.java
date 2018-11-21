@@ -1,6 +1,6 @@
 package com.mytaxi.android_demo.dependencies.component;
 
-import com.mytaxi.android_demo.IntegrationTests;
+import com.mytaxi.android_demo.BaseTests;
 import com.mytaxi.android_demo.dependencies.module.FakeBaseUrlModule;
 import com.mytaxi.android_demo.dependencies.module.MockPrefStorageModule;
 import com.mytaxi.android_demo.dependencies.module.NetworkModule;
@@ -15,5 +15,5 @@ import dagger.Component;
 @Component(modules = {FakeBaseUrlModule.class, MockPrefStorageModule.class, ScreenModule.class,
         PermissionModule.class, NetworkModule.class})
 public interface TestComponent extends AppComponent {
-    void inject(IntegrationTests integrationTests);
+    void inject(BaseTests integrationTests);
 }
