@@ -15,7 +15,6 @@ import com.mytaxi.android_demo.utils.CannedDispatcher;
 import com.mytaxi.android_demo.utils.OkHttpIdlingResourceRule;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,8 +26,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -61,27 +58,21 @@ public class IntegrationTests {
     @Inject
     NavigationDrawerScreen mNavigationDrawerScreen;
 
-//    @Inject
-//    IdlingResource mResource;
     @Inject
     Storage mStorage;
     @Inject
     OkHttpIdlingResourceRule mIdlingResource;
 
-    //    @Rule
-    public final MockWebServer mServer = new MockWebServer();
+    final MockWebServer mServer = new MockWebServer();
 
     {
-        TestComponent component = injectApp();
-
-        component.inject(this);
+        injectApp().inject(this);
     }
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
      */
-//    @Rule
-    public final IntentsTestRule<MainActivity> mActivityRule =
+    final IntentsTestRule<MainActivity> mActivityRule =
             new IntentsTestRule<>(MainActivity.class, false, false);
 
     @Rule
@@ -103,7 +94,6 @@ public class IntegrationTests {
 
     /**
      * Set up fixtures then launch the {@link MainActivity}
-     * Inject dependencies. Register the idling resources related to OkHttpClient.
      * Configure the storage mock to emulate the situation when there is no user logged in when
      * the app is launched for the first time, but then return a valid user after successful
      * authentication.
@@ -112,22 +102,12 @@ public class IntegrationTests {
      */
     @Before
     public void setThingsUp() throws IOException {
-//        injectDependencies();
-
         mServer.setDispatcher(new CannedDispatcher());
 
         Mockito.when(mStorage.loadUser()).thenReturn(null, LOGGEDIN_USER);
 
-//        IdlingRegistry.getInstance().register(mResource);
-
         mActivityRule.launchActivity(null);  // launch the main activity
     }
-
-//    @After
-//    public void unregisterIdlingResources() throws IOException {
-//        if (mResource != null)
-//            IdlingRegistry.getInstance().unregister(mResource);
-//    }
 
     @Test
     public void checkLoginAndLogout() {

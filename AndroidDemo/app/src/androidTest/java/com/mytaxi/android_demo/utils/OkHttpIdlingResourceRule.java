@@ -17,12 +17,12 @@ public class OkHttpIdlingResourceRule extends ExternalResource {
     private IdlingResource mResource;
 
     @Inject
-    public OkHttpIdlingResourceRule(OkHttpClient client) {
+    OkHttpIdlingResourceRule(OkHttpClient client) {
         mResource = OkHttp3IdlingResource.create("OkHttp", client);
     }
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         IdlingRegistry.getInstance().register(mResource);
     }
 
