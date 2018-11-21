@@ -96,7 +96,7 @@ public class IntegrationTests {
      * store becoming corrupt and not finding the user after a call to {@link Storage#saveUser(User)}
      */
     @Before
-    public void setThingsUp() {
+    public void setThingsUp() throws IOException {
         injectDependencies();
 
         mServer.setDispatcher(new CannedDispatcher());

@@ -20,7 +20,7 @@ class CannedResponseInterceptor implements Interceptor {
     final String USER_DATA;
     final String DRIVERS_DATA;
 
-    public CannedResponseInterceptor() {
+    public CannedResponseInterceptor() throws IOException {
         USER_DATA = AssetReader.readTestAsset("user.json");
         DRIVERS_DATA = AssetReader.readTestAsset("drivers.json");
     }
