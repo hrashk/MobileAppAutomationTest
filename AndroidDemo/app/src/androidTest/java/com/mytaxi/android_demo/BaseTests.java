@@ -10,6 +10,7 @@ import com.mytaxi.android_demo.screens.AuthenticationScreen;
 import com.mytaxi.android_demo.screens.DriverProfileScreen;
 import com.mytaxi.android_demo.screens.MainScreen;
 import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
+import com.mytaxi.android_demo.screens.Screens;
 import com.mytaxi.android_demo.utils.OkHttpIdlingResourceRule;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
@@ -25,14 +26,7 @@ import okhttp3.mockwebserver.MockWebServer;
 public class BaseTests {
 
     @Inject
-    AuthenticationScreen mAuthenticationScreen;
-    @Inject
-    MainScreen mMainScreen;
-    @Inject
-    DriverProfileScreen mDriverProfileScreen;
-    @Inject
-    NavigationDrawerScreen mNavigationDrawerScreen;
-
+    Screens mScreens;
     @Inject
     Storage mStorage;
     @Inject

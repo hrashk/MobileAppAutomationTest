@@ -4,6 +4,8 @@ import android.widget.AdapterView;
 
 import com.mytaxi.android_demo.R;
 
+import javax.inject.Inject;
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -21,6 +23,10 @@ import static com.mytaxi.android_demo.matchers.WithEveryItemMatcher.withEveryIte
 public class MainScreen {
 
     protected static final int SEARCH_FIELD_ID = R.id.textSearch;
+
+    @Inject
+    public MainScreen() {
+    }
 
     /**
      * Checks if the {@link com.mytaxi.android_demo.activities.MainActivity} is displayed.

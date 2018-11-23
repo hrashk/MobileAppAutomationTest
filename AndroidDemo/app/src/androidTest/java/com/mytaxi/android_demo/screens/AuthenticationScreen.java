@@ -2,6 +2,8 @@ package com.mytaxi.android_demo.screens;
 
 import com.mytaxi.android_demo.R;
 
+import javax.inject.Inject;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -18,6 +20,10 @@ public class AuthenticationScreen {
     protected static final int USERNAME_FIELD_ID = R.id.edt_username;
     protected static final int PASSWORD_FIELD_ID = R.id.edt_password;
     protected static final int LOGIN_BUTTON_ID = R.id.btn_login;
+
+    @Inject
+    public AuthenticationScreen() {
+    }
 
     /**
      * Enter username & password, then click on the Login button.

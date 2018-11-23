@@ -2,6 +2,8 @@ package com.mytaxi.android_demo.screens;
 
 import com.mytaxi.android_demo.R;
 
+import javax.inject.Inject;
+
 import androidx.test.espresso.contrib.DrawerActions;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -16,6 +18,10 @@ public class NavigationDrawerScreen {
     protected static final int USERNAME_LABEL_ID = R.id.nav_username;
     protected static final int NAVIGATION_VIEW_ID = R.id.nav_view;
     protected static final int LOGOUT_BUTTON_ID = R.id.nav_logout;
+
+    @Inject
+    public NavigationDrawerScreen() {
+    }
 
     public NavigationDrawerScreen openNavigationDrawer() {
         onView(withId(DRAWER_LAYOUT_ID))

@@ -52,25 +52,25 @@ public class IntegrationTests extends BaseTests {
     @Test
     public void checkLoginAndLogout() {
         // When the user authenticates herself
-        mAuthenticationScreen.authenticateUser(USERNAME, PASSWORD);
-        mMainScreen.checkIsDisplayed(); // Then the main screen appears
+        mScreens.authentication.authenticateUser(USERNAME, PASSWORD);
+        mScreens.main.checkIsDisplayed(); // Then the main screen appears
 
-        mNavigationDrawerScreen.logoutUser(USERNAME); // When the user logs out
-        mAuthenticationScreen.checkIsDisplayed();   // Then the authentication screen appears
+        mScreens.navigationDrawer.logoutUser(USERNAME); // When the user logs out
+        mScreens.authentication.checkIsDisplayed();   // Then the authentication screen appears
     }
 
     @Test
     public void checkSearchingDefaultDriver() {
         // When the user authenticates herself
-        mAuthenticationScreen.authenticateUser(USERNAME, PASSWORD);
+        mScreens.authentication.authenticateUser(USERNAME, PASSWORD);
 
-        mMainScreen.checkIsDisplayed()  // Then the main screen appears
+        mScreens.main.checkIsDisplayed()  // Then the main screen appears
                 .searchForDrivers(SEARCH_STRING) // When the user searches for sa
                 // Then only drivers with that prefix are shown
                 .checkSearchResultsStartWith(SEARCH_STRING)
                 .selectDriverByName(DEFAULT_DRIVER_NAME); // When selecting the 2nd driver
         // Then the driver profile screen is displayed
-        mDriverProfileScreen.checkIsDisplayedForDriver(DEFAULT_DRIVER_NAME)
+        mScreens.driverProfile.checkIsDisplayedForDriver(DEFAULT_DRIVER_NAME)
                 .clickOnDialButton() // When the user clicks on the dial button
                 // Then the driver's phone number is passed to the dialer app
                 .checkDialedNumber(DEFAULT_PHONE_NUMBER);
