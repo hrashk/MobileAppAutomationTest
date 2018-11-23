@@ -16,6 +16,6 @@ public class Screens {
     public NavigationDrawerScreen navigationDrawer;
 
     @Inject
-    public Screens() {
+    Screens() {
     }
 }

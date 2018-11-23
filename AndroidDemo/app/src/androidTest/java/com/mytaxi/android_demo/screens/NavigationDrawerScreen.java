@@ -20,7 +20,10 @@ public class NavigationDrawerScreen {
     protected static final int LOGOUT_BUTTON_ID = R.id.nav_logout;
 
     @Inject
-    public NavigationDrawerScreen() {
+    AuthenticationScreen mAuthenticationScreen;
+
+    @Inject
+    NavigationDrawerScreen() {
     }
 
     public NavigationDrawerScreen openNavigationDrawer() {
@@ -41,9 +44,10 @@ public class NavigationDrawerScreen {
         return this;
     }
 
-    public NavigationDrawerScreen logoutUser(String username) {
-        return openNavigationDrawer()
+    public AuthenticationScreen logoutUser(String username) {
+        openNavigationDrawer()
                 .checkShowsUsername(username)
                 .clickOnLogoutButton();
+        return mAuthenticationScreen;
     }
 }

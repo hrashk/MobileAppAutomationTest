@@ -1,8 +1,10 @@
 package com.mytaxi.android_demo.screens;
 
+import com.android.dx.command.Main;
 import com.mytaxi.android_demo.R;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -15,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  * Using replaceText instead of typeText to avoid an issue in landscape mode with popup edit boxes.
  * TODO: research a proper Espresso way for doing this.
  */
+@Singleton
 public class AuthenticationScreen {
 
     protected static final int USERNAME_FIELD_ID = R.id.edt_username;
@@ -22,7 +25,26 @@ public class AuthenticationScreen {
     protected static final int LOGIN_BUTTON_ID = R.id.btn_login;
 
     @Inject
-    public AuthenticationScreen() {
+    MainScreen mMainScreen;
+
+    @Inject
+    AuthenticationScreen() {
+    }
+
+    /**
+     * We must move to the main screen
+     */
+    public MainScreen authenticateValidUser(String username, String password) {
+        performAuthentication(username, password);
+        return mMainScreen;
+    }
+
+    /**
+     * We must stay on the same screen
+     */
+    public AuthenticationScreen authenticateInvalidUser(String username, String password) {
+        performAuthentication(username, password);
+        return this;
     }
 
     /**
@@ -31,8 +53,8 @@ public class AuthenticationScreen {
      * @param username to enter
      * @param password to enter
      */
-    public AuthenticationScreen authenticateUser(String username, String password) {
-        return enterUsername(username)
+    void performAuthentication(String username, String password) {
+        enterUsername(username)
                 .enterPassword(password)
                 .clickOnLoginButton();
     }
@@ -55,7 +77,7 @@ public class AuthenticationScreen {
         return this;
     }
 
-    public AuthenticationScreen checkIsDisplayed() {
+    public AuthenticationScreen checkAuthScreenIsDisplayed() {
         onView(withId(USERNAME_FIELD_ID))
                 .check(matches(isDisplayed()));
         return this;

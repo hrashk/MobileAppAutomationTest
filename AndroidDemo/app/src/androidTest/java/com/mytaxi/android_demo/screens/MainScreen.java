@@ -25,14 +25,17 @@ public class MainScreen {
     protected static final int SEARCH_FIELD_ID = R.id.textSearch;
 
     @Inject
-    public MainScreen() {
+    DriverProfileScreen mDriverProfileScreen;
+
+    @Inject
+    MainScreen() {
     }
 
     /**
      * Checks if the {@link com.mytaxi.android_demo.activities.MainActivity} is displayed.
      * It looks for the search field on the screen.
      */
-    public MainScreen checkIsDisplayed() {
+    public MainScreen checkMainScreenIsDisplayed() {
         onView(withId(SEARCH_FIELD_ID))
                 .check(matches(isDisplayed()));
         return this;
@@ -44,11 +47,11 @@ public class MainScreen {
         return this;
     }
 
-    public MainScreen selectDriverByName(String name) {
+    public DriverProfileScreen selectDriverByName(String name) {
         onData(withDriverName(name))
                 .inRoot(isPlatformPopup())
                 .perform(click());
-        return this;
+        return mDriverProfileScreen;
     }
 
     public MainScreen checkSearchResultsStartWith(String prefix) {
