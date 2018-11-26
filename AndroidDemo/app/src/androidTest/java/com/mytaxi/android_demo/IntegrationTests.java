@@ -52,17 +52,17 @@ public class IntegrationTests extends BaseTests {
     @Test
     public void checkLoginAndLogout() {
         // When the user authenticates herself
-        mScreens.authentication.authenticateValidUser(USERNAME, PASSWORD)
+        mScreens.authentication().authenticateValidUser(USERNAME, PASSWORD)
                 .checkMainScreenIsDisplayed(); // Then the main screen appears
 
-        mScreens.navigationDrawer.logoutUser(USERNAME) // When the user logs out
+        mScreens.navigationDrawer().logoutUser(USERNAME) // When the user logs out
                 .checkAuthScreenIsDisplayed();
     }
 
     @Test
     public void checkSearchingDefaultDriver() {
         // When the user authenticates herself
-        mScreens.authentication.authenticateValidUser(USERNAME, PASSWORD)
+        mScreens.authentication().authenticateValidUser(USERNAME, PASSWORD)
                 .checkMainScreenIsDisplayed()  // Then the main screen appears
                 .searchForDrivers(SEARCH_STRING) // When the user searches for sa
                 // Then only drivers with that prefix are shown

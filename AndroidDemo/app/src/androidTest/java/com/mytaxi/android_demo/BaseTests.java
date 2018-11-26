@@ -6,11 +6,6 @@ import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.dependencies.component.DaggerTestComponent;
 import com.mytaxi.android_demo.dependencies.component.TestComponent;
 import com.mytaxi.android_demo.dependencies.module.FakeBaseUrlModule;
-import com.mytaxi.android_demo.screens.AuthenticationScreen;
-import com.mytaxi.android_demo.screens.DriverProfileScreen;
-import com.mytaxi.android_demo.screens.MainScreen;
-import com.mytaxi.android_demo.screens.NavigationDrawerScreen;
-import com.mytaxi.android_demo.screens.Screens;
 import com.mytaxi.android_demo.utils.OkHttpIdlingResourceRule;
 import com.mytaxi.android_demo.utils.storage.Storage;
 
@@ -25,8 +20,7 @@ import okhttp3.mockwebserver.MockWebServer;
 
 public class BaseTests {
 
-    @Inject
-    Screens mScreens;
+    TestComponent mScreens;
     @Inject
     Storage mStorage;
     @Inject
@@ -35,7 +29,8 @@ public class BaseTests {
     final MockWebServer mServer = new MockWebServer();
 
     {
-        injectApp().inject(this);
+        mScreens = injectApp();
+        mScreens.inject(this);
     }
 
     /**

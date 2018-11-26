@@ -5,6 +5,7 @@ import android.widget.AdapterView;
 import com.mytaxi.android_demo.R;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -20,6 +21,7 @@ import static com.mytaxi.android_demo.matchers.StringStartsWithIgnoringCaseMatch
 import static com.mytaxi.android_demo.matchers.WithDriverNameMatcher.withDriverName;
 import static com.mytaxi.android_demo.matchers.WithEveryItemMatcher.withEveryItem;
 
+@Singleton
 public class MainScreen {
 
     protected static final int SEARCH_FIELD_ID = R.id.textSearch;

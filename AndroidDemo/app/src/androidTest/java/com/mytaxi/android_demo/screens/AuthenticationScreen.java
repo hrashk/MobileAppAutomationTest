@@ -1,6 +1,5 @@
 package com.mytaxi.android_demo.screens;
 
-import com.android.dx.command.Main;
 import com.mytaxi.android_demo.R;
 
 import javax.inject.Inject;
