@@ -1,6 +1,7 @@
 package com.mytaxi.android_demo;
 
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.dependencies.component.TestComponent;
 import com.mytaxi.android_demo.models.User;
 import com.mytaxi.android_demo.utils.CannedDispatcher;
 import com.mytaxi.android_demo.utils.DependencyInjector;
@@ -11,7 +12,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
@@ -42,11 +42,11 @@ public class IntegrationTests {
     @ClassRule
     public static final MockWebServer mServer = new MockWebServer();
 
-    private DependencyInjector mInjector = new DependencyInjector(mServer.url("/app"));
+    private TestComponent mInjector = DependencyInjector.injectApp(mServer.url("/app"));
 
     @Rule
     public final OkHttpIdlingResourceRule mIdlingResource =
-            new OkHttpIdlingResourceRule(mInjector.getComponent().httpClient());
+            new OkHttpIdlingResourceRule(mInjector.httpClient());
 
     /**
      * The activity is not launched right away so that we have a chance to set things up
@@ -67,7 +67,7 @@ public class IntegrationTests {
     public void setThingsUp() throws IOException {
         mServer.setDispatcher(new CannedDispatcher());
 
-        Mockito.when(mInjector.getComponent().storage().loadUser())
+        Mockito.when(mInjector.storage().loadUser())
                 .thenReturn(null, LOGGEDIN_USER);
 
         mActivityRule.launchActivity(null);  // launch the main activity
@@ -76,11 +76,11 @@ public class IntegrationTests {
     @Test
     public void checkLoginAndLogout() {
         // When the user authenticates herself
-        mInjector.getComponent().authentication()
+        mInjector.authentication()
                 .authenticateValidUser(USERNAME, PASSWORD)
                 .checkMainScreenIsDisplayed(); // Then the main screen appears
 
-        mInjector.getComponent().navigationDrawer()
+        mInjector.navigationDrawer()
                 .logoutUser(USERNAME) // When the user logs out
                 .checkAuthScreenIsDisplayed();
     }
@@ -88,7 +88,7 @@ public class IntegrationTests {
     @Test
     public void checkSearchingDefaultDriver() {
         // When the user authenticates herself
-        mInjector.getComponent().authentication()
+        mInjector.authentication()
                 .authenticateValidUser(USERNAME, PASSWORD)
                 .checkMainScreenIsDisplayed()  // Then the main screen appears
                 .searchForDrivers(SEARCH_STRING) // When the user searches for sa

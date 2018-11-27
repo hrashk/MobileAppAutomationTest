@@ -12,17 +12,7 @@ import okhttp3.HttpUrl;
 
 public class DependencyInjector {
 
-    private TestComponent mComponent;
-
-    public DependencyInjector(HttpUrl baseUrl) {
-        mComponent = injectApp(baseUrl);
-    }
-
-    public TestComponent getComponent() {
-        return mComponent;
-    }
-
-    private TestComponent injectApp(HttpUrl baseUrl) {
+    public static TestComponent injectApp(HttpUrl baseUrl) {
         TestComponent component = DaggerTestComponent.builder()
                 .fakeBaseUrlModule(new FakeBaseUrlModule(baseUrl))
                 .build();
