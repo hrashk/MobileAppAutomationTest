@@ -17,7 +17,7 @@ public class OkHttpIdlingResourceRule extends ExternalResource {
     private IdlingResource mResource;
 
     @Inject
-    OkHttpIdlingResourceRule(OkHttpClient client) {
+    public OkHttpIdlingResourceRule(OkHttpClient client) {
         mResource = OkHttp3IdlingResource.create("OkHttp", client);
     }
 
